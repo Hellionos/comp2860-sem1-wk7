@@ -32,6 +32,9 @@ class ShiftCipher:
         str
             The shifted letter.
         """
+
+        position = ord(letter) - ShiftCipher.offset
+
         shifted_letter = ''
         return shifted_letter
 

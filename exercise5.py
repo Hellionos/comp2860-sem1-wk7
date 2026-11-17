@@ -34,7 +34,13 @@ class VigenereCipher:
         str
             The shifted letter.
         """
-        shifted_letter = ''
+
+        position = ord(letter) - VigenereCipher.offset
+        if forward:
+            position = (position + shift) % 26
+        else:
+            position = (position - shift) % 26
+        shifted_letter = chr(position + VigenereCipher.offset)
         return shifted_letter
 
     def __generate_shift_list(self, plaintext_length: int):
@@ -58,7 +64,17 @@ class VigenereCipher:
         list
             A list of shifts (integers).
         """
+        keyshift_list = []
         shift_list = []
+        for ch in self.keyword:
+            position = ord(ch) - VigenereCipher.offset
+            keyshift_list.append(position)
+            #ord(letter) - VigenereCipher.offset
+        for x in range(plaintext_length):
+            i = x % len(self.keyword)
+            shift_list.append(keyshift_list[i])
+        
+
         return shift_list
 
     def encrypt(self, plaintext: str):
@@ -82,7 +98,20 @@ class VigenereCipher:
         str
             The ciphertext string.
         """
+        plaintext = plaintext.upper()
+        
+        cleaned_text = ''
+        for char in plaintext:
+            if 'A' <= char <= 'Z':
+                cleaned_text += char
+
+        shift_list = self.__generate_shift_list(len(cleaned_text))
+
         ciphertext = ''
+
+        for x in range(len(cleaned_text)):
+            ciphertext += self.__shift_letter(cleaned_text[x],shift_list[x],True)
+
         return ciphertext
 
     def decrypt(self, ciphertext: str):
@@ -109,7 +138,20 @@ class VigenereCipher:
         str
             The plaintext string.
         """
+        ciphertext = ciphertext.upper()
+
+        cleaned_text = ''
+        for char in ciphertext:
+            if 'A' <= char <= 'Z':
+                cleaned_text += char
+
+        shift_list = self.__generate_shift_list(len(cleaned_text))
+
         plaintext = ''
+
+        for x in range(len(cleaned_text)):
+            plaintext += self.__shift_letter(cleaned_text[x],shift_list[x],False)
+
         return plaintext
 
 
